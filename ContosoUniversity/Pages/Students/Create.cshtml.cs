@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using ContosoUniversity.Models;
 
 namespace ContosoUniversity.Pages.Students
@@ -33,10 +29,16 @@ namespace ContosoUniversity.Pages.Students
                 return Page();
             }
 
-            _context.Student.Add(Student);
-            await _context.SaveChangesAsync();
+            var emptyStudent = new Student();
 
-            return RedirectToPage("./Index");
+            if (await TryUpdateModelAsync<Student>(emptyStudent, "student", s => s.FirstMidName, s => s.LastName, s => s.EnrollmentDate))
+            {
+                _context.Student.Add(emptyStudent);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
+            }
+
+            return null;
         }
     }
 }
